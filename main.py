@@ -7,7 +7,7 @@ from models import create_tables, Publisher, Book, Shop, Stock, Sale
 
 
 login = 'postgres'
-password =
+password = ''
 DB = 'BooksSell'
 DSN = f'postgresql://{login}:{password}@localhost:5432/{DB}'
 
@@ -48,13 +48,22 @@ def get_sale(session, id=None, name=None):
         .all()
     return c
 
+
 if __name__ == "__main__":
     engine = sqlalchemy.create_engine(DSN)
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    for line in get_sale(session, id=input("Введите id автора: ")):
-        print(f"{line[0]} | {line[1]} | {float(line[2])} | {str(line[3])}")
+    publisher_id = None
+    publisher_name = None
+    data = input("Введите id автора или его имя: ")
+    if data.isdigit():
+        publisher_id = data
+    else:
+        publisher_name = data
+
+    for line in get_sale(session, id=publisher_id, name=publisher_name):
+        print(f"{line[0]} | {line[1]} | {float(line[2])} | {str(line[3])[:10]}")
     create_tables(engine)
     filling_tables(session)
 
